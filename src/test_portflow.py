@@ -1,5 +1,6 @@
 import io
 import json
+import os
 from pathlib import Path
 
 import app as portflow_app
@@ -9,6 +10,9 @@ import generate_sample_pdfs
 
 
 def run_all_tests():
+    # Use a deterministic password only inside the automated test environment.
+    os.environ["PORTFLOW_DEFAULT_PASSWORD"] = "123456"
+
     # Reset DB for clean test run
     if database.DB_PATH.exists():
         database.DB_PATH.unlink()

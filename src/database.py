@@ -1,6 +1,9 @@
+import os
+import secrets
 import sqlite3
 import json
 import sys
+from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from pathlib import Path
 
@@ -10,6 +13,21 @@ else:
     BASE_APP_DIR = Path(__file__).parent
 
 DB_PATH = BASE_APP_DIR / "portflow.db"
+CREDENTIALS_PATH = BASE_APP_DIR / ".first_run_credentials.txt"
+
+
+def get_initial_password():
+    """Returns a configured demo password or creates a local first-run credential."""
+    configured_password = os.environ.get("PORTFLOW_DEFAULT_PASSWORD")
+    if configured_password:
+        return configured_password
+
+    if CREDENTIALS_PATH.exists():
+        return CREDENTIALS_PATH.read_text(encoding="utf-8").strip()
+
+    generated_password = secrets.token_urlsafe(18)
+    CREDENTIALS_PATH.write_text(generated_password, encoding="utf-8")
+    return generated_password
 
 
 def get_connection():
@@ -43,6 +61,17 @@ def init_db():
         cursor.execute("ALTER TABLE User ADD COLUMN username VARCHAR(60);")
     if "password" not in existing_cols:
         cursor.execute("ALTER TABLE User ADD COLUMN password VARCHAR(150);")
+
+    # Upgrade legacy plaintext passwords to Werkzeug password hashes.
+    for user_row in cursor.execute("SELECT user_id, password FROM User WHERE password IS NOT NULL").fetchall():
+        stored_password = user_row["password"]
+        if not stored_password.startswith(("scrypt:", "pbkdf2:")):
+            cursor.execute(
+                "UPDATE User SET password = ? WHERE user_id = ?",
+                (generate_password_hash(stored_password), user_row["user_id"])
+            )
+
+    initial_password = get_initial_password()
 
     # 2. Table: Customer
     cursor.execute("""
@@ -97,13 +126,13 @@ def init_db():
 
     # Seed or update initial users with login credentials (keeping vitor and admin, adding Igor, Julia, Nicolly, Maria, Thales)
     default_team_users = [
-        ("Vitor Cabral", "Operador", "vitor@sigecar.com.br", "vitor", "123456"),
-        ("Administrador SIGECAR", "Supervisor Operacional", "admin@sigecar.com.br", "admin", "123456"),
-        ("Igor", "Operador", "igor@sigecar.com.br", "igor", "123456"),
-        ("Julia", "Operadora", "julia@sigecar.com.br", "julia", "123456"),
-        ("Nicolly", "Operadora", "nicolly@sigecar.com.br", "nicolly", "123456"),
-        ("Maria", "Operadora", "maria@sigecar.com.br", "maria", "123456"),
-        ("Thales", "Operador", "thales@sigecar.com.br", "thales", "123456")
+        ("Vitor Cabral", "Operador", "vitor@sigecar.com.br", "vitor", initial_password),
+        ("Administrador SIGECAR", "Supervisor Operacional", "admin@sigecar.com.br", "admin", initial_password),
+        ("Igor", "Operador", "igor@sigecar.com.br", "igor", initial_password),
+        ("Julia", "Operadora", "julia@sigecar.com.br", "julia", initial_password),
+        ("Nicolly", "Operadora", "nicolly@sigecar.com.br", "nicolly", initial_password),
+        ("Maria", "Operadora", "maria@sigecar.com.br", "maria", initial_password),
+        ("Thales", "Operador", "thales@sigecar.com.br", "thales", initial_password)
     ]
 
     # Ensure user_id 1 (Vitor Cabral) has email/username/password if created earlier
@@ -111,9 +140,9 @@ def init_db():
         UPDATE User
         SET email = COALESCE(email, 'vitor@sigecar.com.br'),
             username = COALESCE(username, 'vitor'),
-            password = COALESCE(password, '123456')
+            password = COALESCE(password, ?)
         WHERE user_id = 1 AND LOWER(name) LIKE 'vitor%'
-    """)
+    """, (generate_password_hash(initial_password),))
 
     for name, role, email, username, pwd in default_team_users:
         cursor.execute(
@@ -123,7 +152,7 @@ def init_db():
         if cursor.fetchone()["cnt"] == 0:
             cursor.execute(
                 "INSERT INTO User (name, role, email, username, password) VALUES (?, ?, ?, ?, ?)",
-                (name, role, email, username, pwd)
+                (name, role, email, username, generate_password_hash(pwd))
             )
 
     default_customers = [
@@ -177,14 +206,38 @@ def authenticate_user(login_identifier: str, password: str):
 
     conn = get_connection()
     row = conn.execute("""
-        SELECT user_id, name, role, email, username
+        SELECT user_id, name, role, email, username, password
         FROM User
-        WHERE (LOWER(email) = ? OR LOWER(username) = ? OR LOWER(name) = ?)
-          AND password = ?
+        WHERE LOWER(email) = ? OR LOWER(username) = ? OR LOWER(name) = ?
         LIMIT 1
-    """, (ident, ident, ident, pwd)).fetchone()
+    """, (ident, ident, ident)).fetchone()
+
+    if not row:
+        conn.close()
+        return None
+
+    stored_password = row["password"] or ""
+    try:
+        valid_password = check_password_hash(stored_password, pwd)
+    except (ValueError, TypeError):
+        valid_password = False
+
+    # One-time compatibility upgrade for legacy plaintext records.
+    if not valid_password and stored_password == pwd:
+        valid_password = True
+        conn.execute(
+            "UPDATE User SET password = ? WHERE user_id = ?",
+            (generate_password_hash(pwd), row["user_id"])
+        )
+        conn.commit()
+
+    if not valid_password:
+        conn.close()
+        return None
+
+    user = {key: row[key] for key in ("user_id", "name", "role", "email", "username")}
     conn.close()
-    return dict(row) if row else None
+    return user
 
 
 def find_vessel_by_imo(imo: str):

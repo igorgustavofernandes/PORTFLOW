@@ -1,31 +1,39 @@
-
-# Operating System
+# Operating systems
 .DS_Store
 Thumbs.db
 Desktop.ini
 
-# IDE and Editor
+# IDEs and editors
 .vscode/
 .idea/
 
-# Temporary files
-*.tmp
-*.log
-*.bak
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Local databases and generated credentials
+*.db
+*.sqlite
+*.sqlite3
+.first_run_credentials.txt
 
 # Environment variables and secrets
 .env
 .env.*
 !.env.example
 
-# Dependencies and build outputs
-node_modules/
-target/
-dist/
+# Build outputs
 build/
+dist/
+target/
+*.spec
+node_modules/
 
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-venv/
+# Temporary files
+*.tmp
+*.log
+*.bak

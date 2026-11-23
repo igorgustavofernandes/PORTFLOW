@@ -1,126 +1,152 @@
 # PORTFLOW
 
-<p align="center">
-  <img src="assets/logo.png" alt="PORTFLOW Logo" width="220">
-</p>
+**Intelligent Document Processing and Operational Workflow for Maritime Agencies**
 
-<p align="center">
-  <strong>Intelligent Document Processing and Operational Workflow for Maritime Agencies</strong>
-</p>
+PORTFLOW is a functional web prototype developed to streamline the processing of operational PDF documents in maritime agencies. The prototype is branded as **SIGECAR** in its user interface.
 
----
+## About the project
 
-## About the Project
+Maritime agents receive operational documents containing information about vessel movements, cargo operations, interruptions and schedules. Reviewing these documents and preparing client updates manually can be time-consuming and susceptible to human error.
 
-PORTFLOW is a functional web prototype developed to streamline the processing of operational PDF documents in maritime agencies.
+PORTFLOW supports the upload and processing of operational PDFs, information review, manual data registration, preparation of standardized email reports, approval and historical tracking.
 
-The system addresses the manual workflow of reviewing port operation bulletins, extracting relevant information and preparing standardized email updates for international clients.
+## Key features
 
-The prototype, branded as SIGECAR in its interface, combines document processing, operator traceability and an approval-oriented workflow.
-
-## The Problem
-
-Maritime agents receive operational documents containing information about vessel movements, cargo operations, interruptions and schedules.
-
-Manually reviewing these documents and preparing client updates can be time-consuming and susceptible to human error.
-
-## The Solution
-
-PORTFLOW provides a web-based workflow that supports the upload and processing of operational PDFs, information review, manual data registration, email report preparation, approval and historical tracking.
-
-## Key Features
-
-- **PDF Upload:** Upload operational documents for processing.
-- **Information Extraction:** Extract operational information from PDF documents.
-- **Data Review:** Review extracted information within the operational workflow.
-- **Manual Registration:** Support manual registration of operational data.
-- **Email Report Generation:** Prepare standardized operational email reports.
-- **Approval Workflow:** Support the review and approval of reports.
-- **History and Traceability:** Track operational records and actions associated with users.
-- **Authentication:** Login system with operator identification.
-
-## System Screenshots
-
-<!-- Update image paths if the actual filenames differ. -->
-
-### Login
-![Login](assets/screenshots/login.png)
-
-### Document Upload
-![Upload](assets/screenshots/upload.png)
-
-### Data Review
-![Data Review](assets/screenshots/data.png)
-
-### Approval Workflow
-![Approval](assets/screenshots/approval.png)
-
-### Email Reports
-![Email](assets/screenshots/email.png)
-
-### History
-![History](assets/screenshots/history.png)
-
-### Registration
-![Registration](assets/screenshots/registration.png)
-
-## Architecture
-
-PORTFLOW uses a web-based architecture composed of a frontend, a Python backend, a relational database and PDF processing logic.
-
-![System Architecture](assets/diagrams/architecture.png)
-
-For further details, see [System Architecture](docs/architecture.md).
+- PDF upload and validation.
+- Extraction of operational information from PDF documents.
+- Review and correction of extracted data.
+- Manual registration of operational information.
+- Preparation of standardized operational email reports.
+- Approval workflow and history.
+- Operator identification and traceability.
 
 ## Technologies
 
 | Technology | Purpose |
 |---|---|
-| Python | Backend logic and application functionality |
+| Python | Backend logic |
 | Flask | Web framework and API |
-| SQLite | Relational database and data persistence |
+| SQLite | Relational database |
 | pypdf | PDF reading and extraction |
-| HTML | Interface structure |
-| CSS | Interface styling |
-| JavaScript | Frontend interactions and API communication |
+| HTML, CSS and JavaScript | Web interface |
 
-See [Technologies](docs/technologies.md) for more information.
+See [Technologies](docs/technologies.md) for details.
 
-## Operational Workflow
+## Project structure
 
-1. User authentication.
-2. Operational PDF upload.
-3. Document validation and information extraction.
-4. Review of extracted information.
-5. Manual registration when necessary.
-6. Email report preparation.
-7. Approval workflow.
-8. History and traceability.
+```text
+PORTFLOW/
+├── assets/
+│   └── screenshots/
+├── docs/
+│   ├── architecture.md
+│   ├── technologies.md
+│   ├── team.md
+│   └── workflow.md
+├── src/
+│   ├── static/
+│   ├── templates/
+│   ├── app.py
+│   ├── database.py
+│   ├── extractor.py
+│   ├── generate_sample_pdfs.py
+│   ├── test_portflow.py
+│   └── requirements.txt
+├── .gitignore
+└── README.md
+```
 
-See [Operational Workflow](docs/workflow.md) for details.
+## Requirements
 
-## Testing
+- Python 3.10 or newer.
+- pip (Python package installer).
+- Windows, macOS or Linux.
 
-The project includes an automated test suite designed to cover authentication and 17 acceptance scenarios (CT01–CT17).
+## Installation and execution
 
-The tests are documented in the project's source code.
+Open a terminal in the repository root and follow these steps.
 
-## Project Documentation
+### 1. Create a virtual environment
+
+**Windows (PowerShell):**
+
+```powershell
+cd src
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux:**
+
+```bash
+cd src
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+### 3. Start the application
+
+```bash
+python app.py
+```
+
+Open **http://127.0.0.1:5000** in your browser. Keep the terminal open while using the application.
+
+On first startup, the application creates a local file named `.first_run_credentials.txt` inside `src/` containing the generated initial password for the demo accounts. This file is ignored by Git and must never be committed. The usernames are `vitor`, `admin`, `igor`, `julia`, `nicolly`, `maria` and `thales`.
+
+To define your own initial demo password before the first run, set the `PORTFLOW_DEFAULT_PASSWORD` environment variable. Existing databases retain their current passwords, which are upgraded to secure password hashes when the application initializes.
+
+For a stable Flask session key, set `PORTFLOW_SECRET_KEY` before starting the application. Example:
+
+**Windows (PowerShell):**
+
+```powershell
+$env:PORTFLOW_SECRET_KEY = "replace-with-a-long-random-secret"
+```
+
+**macOS / Linux:**
+
+```bash
+export PORTFLOW_SECRET_KEY="replace-with-a-long-random-secret"
+```
+
+If this variable is not set, a random key is generated for the current run, so active sessions will not survive an application restart. Never commit real secrets to the repository. The `.env.example` file documents the available variables; the application does not automatically load a `.env` file.
+
+## Automated tests
+
+From the `src/` directory, with the virtual environment activated, run:
+
+```bash
+python test_portflow.py
+```
+
+The test suite covers authentication and the acceptance scenarios CT01–CT17, as well as additional sample PDF cases. Tests reset the local SQLite database; do not run them against a database containing data you need to keep.
+
+## Documentation
 
 - [System Architecture](docs/architecture.md)
 - [Operational Workflow](docs/workflow.md)
 - [Technologies](docs/technologies.md)
 - [Team and Contributions](docs/team.md)
 
-## Project Presentation
+## Screenshots
 
-The project was developed as part of the Tech Shark Tank challenge at ISULPAR, within the English for Information Systems course.
+The application screenshots are available in [assets/screenshots](assets/screenshots/).
 
-[View the project presentation](docs/presentation.pdf)
+## Project presentation
+
+PORTFLOW was developed as part of the Tech Shark Tank challenge at ISULPAR, within the English for Information Systems course. The presentation PDF is not included in the repository at this time.
 
 ## Team
 
-See [Team and Contributions](docs/team.md) for information about the team and individual contributions.
+See [Team and Contributions](docs/team.md) for the team's roles and contributions.
 
 ---
 
