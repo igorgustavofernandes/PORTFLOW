@@ -29,3 +29,9 @@ The database contains entities associated with users, customers, vessels, PDF pr
 ## System Integration
 
 The frontend communicates with the Flask backend through API endpoints. The backend handles processing, data persistence and operational logic.
+
+## Local Security Configuration
+
+The Flask session signing key is read from the `PORTFLOW_SECRET_KEY` environment variable. When it is not provided, the application generates a random key for the current run.
+
+User passwords are stored as Werkzeug password hashes. Existing plaintext passwords in older local databases are upgraded to hashes when the database initializes. For a first-time local demo setup, the application generates a password and writes it to the ignored `.first_run_credentials.txt` file inside `src/`, unless `PORTFLOW_DEFAULT_PASSWORD` is configured before initialization.
