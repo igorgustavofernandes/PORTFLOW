@@ -141,7 +141,7 @@ From the `src/` directory, with the virtual environment activated, run:
 python test_portflow.py
 ```
 
-The test suite covers authentication and the acceptance scenarios CT01–CT17, as well as additional sample PDF cases. Tests reset the local SQLite database; do not run them against a database containing data you need to keep.
+The test suite covers authentication and the acceptance scenarios CT01–CT17, as well as additional sample PDF cases. Test runs use a temporary SQLite database and a temporary sample-PDF directory, leaving the application's local database and bundled sample files untouched.
 
 ## Documentation and project deliverables
 
