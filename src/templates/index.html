@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGECAR — Automação Inteligente de Relatórios Operacionais</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- ================= TELA DE LOGIN (SIGECAR AUTHENTICATION GATE) ================= -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <!-- Lado Esquerdo: Identidade Visual SIGECAR -->
+            <div class="login-hero">
+                <div>
+                    <div class="brand-logo-wrapper login-logo-wrapper">
+                        <img src="/static/logo_sigecar.jpg" alt="SIGECAR — Sistema de Gestão de Cargas Portuárias">
+                    </div>
+                    <div class="hero-tagline">Making a Shipping Agent's Day Easier.</div>
+                    <p class="hero-desc">
+                        Automação inteligente de relatórios operacionais portuários com extração de PDF, validação de vínculo IMO e controle humano obrigatório na aprovação.
+                    </p>
+
+                    <div class="login-features">
+                        <div class="login-feature-item">
+                            <span class="feat-icon">✔</span>
+                            <span>Leitura automática de boletins PDF por âncoras</span>
+                        </div>
+                        <div class="login-feature-item">
+                            <span class="feat-icon">✔</span>
+                            <span>Associação inteligente de Embarcação (IMO) e Cliente</span>
+                        </div>
+                        <div class="login-feature-item">
+                            <span class="feat-icon">✔</span>
+                            <span>Minutas padronizadas em Inglês e Português</span>
+                        </div>
+                        <div class="login-feature-item">
+                            <span class="feat-icon">✔</span>
+                            <span>Rastreabilidade de aprovação por operador autenticado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; display: flex; align-items: center; gap: 12px;">
+                    <div class="user-avatar" style="background: var(--destaque); border: none;">SG</div>
+                    <div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #FFFFFF;">SIGECAR • Gestão de Cargas Portuárias</div>
+                        <div style="font-size: 12px; color: #94A8BE;">Ambiente Operacional Seguro • Porto de Paranaguá</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lado Direito: Formulário de Autenticação -->
+            <div class="login-form-side">
+                <h2>Acesso do Operador</h2>
+                <p class="login-sub">Entre com suas credenciais corporativas do SIGECAR para iniciar o processamento.</p>
+
+                <div id="loginErrorBox" class="alert-box alert-error" style="display: none; margin-top: 0; margin-bottom: 16px;"></div>
+
+                <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="loginUsername">E-mail ou Usuário</label>
+                        <input type="text" class="form-control" id="loginUsername" value="" placeholder="Ex: vitor@sigecar.com.br ou vitor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Senha</label>
+                        <input type="password" class="form-control" id="loginPassword" value="" placeholder="Digite sua senha" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 6px; padding: 13px;">
+                        Entrar no SIGECAR →
+                    </button>
+                </form>
+
+                <div class="demo-credentials-box">
+                    <div class="demo-credentials-title">👥 Equipe SIGECAR — Selecionar Operador</div>
+                    <div class="demo-cred-buttons" id="loginUsersGrid">
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('vitor@sigecar.com.br')">
+                            <strong>Vitor Cabral (Operador)</strong>
+                            <span>vitor@sigecar.com.br</span>
+                        </button>
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('igor@sigecar.com.br')">
+                            <strong>Igor (Operador)</strong>
+                            <span>igor@sigecar.com.br</span>
+                        </button>
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('julia@sigecar.com.br')">
+                            <strong>Julia (Operadora)</strong>
+                            <span>julia@sigecar.com.br</span>
+                        </button>
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('nicolly@sigecar.com.br')">
+                            <strong>Nicolly (Operadora)</strong>
+                            <span>nicolly@sigecar.com.br</span>
+                        </button>
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('maria@sigecar.com.br')">
+                            <strong>Maria (Operadora)</strong>
+                            <span>maria@sigecar.com.br</span>
+                        </button>
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('thales@sigecar.com.br')">
+                            <strong>Thales (Operador)</strong>
+                            <span>thales@sigecar.com.br</span>
+                        </button>
+                        <button type="button" class="demo-cred-btn" onclick="fillDemoCredentials('admin@sigecar.com.br')">
+                            <strong>Admin SIGECAR (Supervisor)</strong>
+                            <span>admin@sigecar.com.br</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= LEFT SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div>
+            <div class="brand-box">
+                <div class="brand-logo-wrapper" title="SIGECAR — Sistema de Gestão de Cargas Portuárias">
+                    <img src="/static/logo_sigecar.jpg" alt="SIGECAR — Sistema de Gestão de Cargas Portuárias">
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-step="1" onclick="goToStep(1)">
+                    <span class="nav-icon">☁</span>
+                    <span>Upload PDF</span>
+                </button>
+                <button class="nav-item" data-step="2" onclick="goToStep(2)">
+                    <span class="nav-icon">✨</span>
+                    <span>Extração</span>
+                </button>
+                <button class="nav-item" data-step="3" onclick="goToStep(3)">
+                    <span class="nav-icon">✎</span>
+                    <span>Revisão</span>
+                </button>
+                <button class="nav-item" data-step="4" onclick="goToStep(4)">
+                    <span class="nav-icon">🚢</span>
+                    <span>Cadastro Manual</span>
+                </button>
+                <button class="nav-item" data-step="5" onclick="goToStep(5)">
+                    <span class="nav-icon">✉</span>
+                    <span>Geração E-mail</span>
+                </button>
+                <button class="nav-item" data-step="6" onclick="goToStep(6)">
+                    <span class="nav-icon">✔</span>
+                    <span>Aprovação</span>
+                </button>
+
+                <div class="nav-divider"></div>
+
+                <button class="nav-item" data-step="7" onclick="goToStep(7)">
+                    <span class="nav-icon">🗄</span>
+                    <span>Histórico & Banco</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-avatar" id="sidebarUserAvatar">VC</div>
+            <div style="overflow: hidden;">
+                <div class="user-name" id="sidebarUserName" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Vitor Cabral</div>
+                <div class="user-role" id="sidebarUserRole">Operador</div>
+            </div>
+            <button type="button" class="btn-logout" onclick="handleLogout()" title="Encerrar sessão e voltar ao Login">
+                Sair
+            </button>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-content">
+
+        <!-- TOP HEADER BAR (Changes dynamically with each step) -->
+        <header class="top-header">
+            <div class="header-titles">
+                <h1 id="headerTitle">Upload de Boletim Operacional</h1>
+                <p id="headerSubtitle">Etapa 1 de 6 • Importação e validação do documento PDF</p>
+            </div>
+            <div class="header-actions" id="headerActions">
+                <span class="badge badge-success">🛡 Limite: PDF até 5 MB</span>
+            </div>
+        </header>
+
+        <div class="step-container">
+
+            <!-- =========================================================
+                 ETAPA 1 DE 6: UPLOAD DE BOLETIM OPERACIONAL
+                 ========================================================= -->
+            <section id="step-1" class="step-panel active">
+
+                <!-- Simulador de E-mail do Operador Portuário & Cenários de Teste (Tech Shark Tank + CT01-CT10) -->
+                <div class="inbox-simulator">
+                    <div class="inbox-header">
+                        <div>
+                            <strong style="font-size: 14px; color: var(--marinho);">📬 Simulador de Boletins Recebidos do Operador Portuário & Cenários de Teste (1-Clique)</strong>
+                            <p style="font-size: 12.5px; color: var(--texto-secundario); margin-top: 2px;">
+                                Clique em qualquer boletim abaixo para simular o recebimento do anexo PDF enviado pelo terminal portuário (ou selecione um arquivo do seu computador).
+                            </p>
+                        </div>
+                        <button class="btn btn-outline-subtle btn-sm" onclick="toggleOperatorEmailModal()">
+                            📧 Ver E-mail do Operador (Tech Shark Tank)
+                        </button>
+                    </div>
+
+                    <!-- Modal/Card Expansível do E-mail do Operador Portuário -->
+                    <div id="operatorEmailBox" style="display: none; margin-top: 14px; padding: 16px; background: #F5F8FA; border: 1px solid var(--borda); border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 12.5px; font-weight: 700; color: var(--destaque);">INCOMING OPERATOR EMAIL (SIMULATION FOR PRESENTATION)</span>
+                            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--texto-secundario);">19/11/2026 • 08:12 AM</span>
+                        </div>
+                        <div style="font-size: 13px; line-height: 1.6; color: var(--marinho);">
+                            <div><strong>From:</strong> Paranaguá Container Terminal Ops &lt;terminal.ops@tcp-paranagua.com.br&gt;</div>
+                            <div><strong>To:</strong> SIGECAR Shipping Agency Operations Desk &lt;agency@sigecar.com.br&gt;</div>
+                            <div><strong>Subject:</strong> [DAILY TERMINAL BULLETIN] Vessel Operations Report - Berth 214 - MV Atlantic Star</div>
+                            <div style="margin-top: 8px; padding: 10px 12px; background: #FFFFFF; border-radius: 6px; border: 1px solid var(--borda);">
+                                Dear SIGECAR Shipping Agent,<br>
+                                Attached is the standardized Port Operational Bulletin (PDF) regarding vessel berthing and cargo operations at the Port of Paranaguá.<br>
+                                <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <button class="btn btn-primary btn-sm" onclick="loadSampleFile('BOLETIM_ATLANTIC_STAR_1911.pdf')">
+                                        📎 Importar Anexo: BOLETIM_ATLANTIC_STAR_1911.pdf
+                                    </button>
+                                    <a class="btn btn-outline-subtle btn-sm" href="/api/sample-file/BOLETIM_ATLANTIC_STAR_1911.pdf" download>
+                                        ⬇ Baixar PDF Original
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="samples-grid" id="samplesGrid"></div>
+                </div>
+
+                <div class="grid-2col">
+                    <!-- Coluna Esquerda: Drag & Drop + Arquivo Recebido -->
+                    <div>
+                        <input type="file" id="pdfFileInput" accept=".pdf,.txt" style="display: none;" onchange="handleFileSelect(event)">
+
+                        <div class="dropzone" id="dropzoneBox" onclick="document.getElementById('pdfFileInput').click()">
+                            <div class="dropzone-icon">📄</div>
+                            <h3>Arraste e solte o arquivo PDF aqui</h3>
+                            <p>Suporta relatórios operacionais com texto selecionável</p>
+                            <button type="button" class="btn btn-secondary" onclick="event.stopPropagation(); document.getElementById('pdfFileInput').click();">
+                                📁 Selecionar PDF
+                            </button>
+                        </div>
+
+                        <!-- Alerta de Erro de Validação (CT02, CT03, CT04, CT05) -->
+                        <div id="uploadErrorBox" class="alert-box alert-error" style="display: none; margin-bottom: 18px;"></div>
+
+                        <!-- Card Arquivo Recebido -->
+                        <div class="card">
+                            <div class="card-title">
+                                <span>Arquivo Recebido</span>
+                                <span id="fileReadableBadge" class="badge badge-success">✓ Texto legível</span>
+                            </div>
+
+                            <div class="received-file-box">
+                                <div class="pdf-icon-badge" id="receivedFileIcon">PDF</div>
+                                <div class="received-file-meta">
+                                    <h4 id="receivedFileName">BOLETIM_ATLANTIC_STAR_1911.pdf</h4>
+                                    <span id="receivedFileDetails">1,8 KB • 1 página • Recebido às 08:12</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn btn-primary" id="btnStartExtraction" onclick="goToStep(2)">
+                                    ▶ Iniciar extração
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Pré-visualização do Documento -->
+                    <div class="card">
+                        <div class="card-title">
+                            <span style="display: inline-flex; align-items: center; gap: 8px;">
+                                <span style="color: var(--destaque);">👁</span> Pré-visualização do Documento
+                            </span>
+                            <span style="font-family: var(--font-mono); font-size: 13px; color: var(--texto-secundario); font-weight: 500;" id="previewPageCounter">
+                                Pág. 1 / 1
+                            </span>
+                        </div>
+
+                        <div class="doc-preview-sheet">
+                            <div>
+                                <div class="doc-sheet-header">
+                                    <h4>BOLETIM OPERACIONAL<br>PORTUÁRIO</h4>
+                                    <span id="previewPortHeader">PARANAGUÁ</span>
+                                </div>
+                                <div class="doc-sheet-body" id="previewRawText">Carregando boletim operacional...</div>
+                            </div>
+
+                            <div class="doc-sheet-footer">
+                                Documento padronizado pronto para leitura automática — SIGECAR.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 ETAPA 2 DE 6: DADOS EXTRAÍDOS AUTOMATICAMENTE
+                 ========================================================= -->
+            <section id="step-2" class="step-panel">
+
+                <div class="extraction-summary-bar">
+                    <div class="summary-counts">
+                        <span class="count-valid" id="summaryFoundCount">
+                            <i>✔</i> 6 campos encontrados
+                        </span>
+                        <span class="count-pending" id="summaryPendingCount">
+                            <i>⚠</i> 1 campo pendente
+                        </span>
+                    </div>
+                    <div class="read-rate-label" id="summaryReadRate">
+                        Taxa de leitura: 86%
+                    </div>
+                </div>
+
+                <!-- Grid de Cartões de Campos Extraídos -->
+                <div id="extractedCardsTop" class="extracted-cards-grid-top"></div>
+                <div id="extractedCardsBottom" class="extracted-cards-grid-bottom"></div>
+                <div id="extractedCardsExtended" class="extracted-cards-grid-top" style="display: none;"></div>
+
+                <div class="info-strip">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: var(--destaque); font-weight: 800;">ℹ</span>
+                        <span id="extractionInfoMessage">A ausência do término previsto não interrompe o fluxo. Complete na tela de Revisão.</span>
+                    </div>
+                    <strong style="color: var(--marinho); font-size: 13.5px;">Aguardando revisão</strong>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 ETAPA 3 DE 6: REVISÃO E VÍNCULO OPERACIONAL
+                 ========================================================= -->
+            <section id="step-3" class="step-panel">
+                <div class="grid-2col">
+
+                    <!-- Coluna Esquerda: Dados Extraídos (Editáveis) -->
+                    <div class="card">
+                        <div class="card-title">
+                            <span>Dados Extraídos (Editáveis)</span>
+                            <button type="button" class="btn btn-outline-subtle btn-sm" onclick="toggleExtendedFields()">
+                                <span id="btnToggleExtendedText">+ Mostrar campos completos (Viagem, ETB, ETD, Carga, Obs.)</span>
+                            </button>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div>
+                                <label class="form-label" id="lbl_vessel_name">Nome da embarcação</label>
+                                <input type="text" class="form-control" id="inp_vessel_name" oninput="onFieldManualEdit('vessel_name')">
+                            </div>
+                            <div>
+                                <label class="form-label" id="lbl_imo">IMO</label>
+                                <input type="text" class="form-control mono" id="inp_imo" maxlength="7" oninput="onFieldManualEdit('imo')">
+                            </div>
+                        </div>
+
+                        <div class="form-row-3">
+                            <div>
+                                <label class="form-label" id="lbl_port">Porto</label>
+                                <input type="text" class="form-control" id="inp_port" oninput="onFieldManualEdit('port')">
+                            </div>
+                            <div>
+                                <label class="form-label" id="lbl_berth">Berço</label>
+                                <input type="text" class="form-control mono" id="inp_berth" oninput="onFieldManualEdit('berth')">
+                            </div>
+                            <div>
+                                <label class="form-label" id="lbl_status">Status</label>
+                                <input type="text" class="form-control" id="inp_status" oninput="onFieldManualEdit('status')">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div>
+                                <label class="form-label" id="lbl_eta">Início da operação</label>
+                                <input type="text" class="form-control mono" id="inp_eta" oninput="onFieldManualEdit('eta')">
+                            </div>
+                            <div>
+                                <label class="form-label pending-label" id="lbl_etc">Término previsto (Ausente)</label>
+                                <input type="text" class="form-control mono pending-input" id="inp_etc" oninput="onFieldManualEdit('etc')">
+                            </div>
+                        </div>
+
+                        <!-- Campos Complementares da Especificação (Seção 6: Viagem, ETB, ETD, Carga, Observações) -->
+                        <div id="extendedRevisionFields" style="display: none; border-top: 1px dashed var(--borda); padding-top: 16px; margin-top: 8px;">
+                            <div class="form-row-3">
+                                <div>
+                                    <label class="form-label" id="lbl_voyage">Viagem / Processo</label>
+                                    <input type="text" class="form-control mono" id="inp_voyage" oninput="onFieldManualEdit('voyage')">
+                                </div>
+                                <div>
+                                    <label class="form-label" id="lbl_etb">ETB (Atracação)</label>
+                                    <input type="text" class="form-control mono" id="inp_etb" oninput="onFieldManualEdit('etb')">
+                                </div>
+                                <div>
+                                    <label class="form-label" id="lbl_etd">ETD (Saída)</label>
+                                    <input type="text" class="form-control mono" id="inp_etd" oninput="onFieldManualEdit('etd')">
+                                </div>
+                            </div>
+                            <div class="form-row-2">
+                                <div>
+                                    <label class="form-label" id="lbl_cargo">Carga</label>
+                                    <input type="text" class="form-control" id="inp_cargo" oninput="onFieldManualEdit('cargo')">
+                                </div>
+                                <div>
+                                    <label class="form-label" id="lbl_notes">Observações</label>
+                                    <input type="text" class="form-control" id="inp_notes" oninput="onFieldManualEdit('notes')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="revisionAlertBox" class="alert-box alert-warning">
+                            <strong>Alerta:</strong> Campo "Término previsto" não encontrado no PDF. Preencha manualmente ou mantenha pendente.
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Associação no Banco -->
+                    <div class="card">
+                        <div class="card-title">
+                            <span>Associação no Banco</span>
+                            <span id="dbMatchBadge" class="badge badge-success" style="font-size: 12px;">IMO Localizado</span>
+                        </div>
+
+                        <!-- Banner de Busca Auxiliar por Nome (RN02 / RF04 / CT09) -->
+                        <div id="nameSuggestionBox" class="alert-box alert-warning" style="display: none; margin-top: 0; margin-bottom: 16px;"></div>
+
+                        <div class="form-group">
+                            <label class="form-label">Associar embarcação existente</label>
+                            <select class="form-control" id="selVessel" onchange="onVesselSelectChange()">
+                                <option value="">-- Não vinculada / Vinculação manual --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Selecionar cliente</label>
+                            <select class="form-control" id="selCustomer" onchange="onCustomerSelectChange()">
+                                <option value="">-- Selecione o cliente destinatário --</option>
+                            </select>
+                        </div>
+
+                        <div class="email-pill-box" id="customerEmailPill">
+                            <span>🔗</span>
+                            <span id="customerEmailText">E-mail: ops@transmar-agency.com</span>
+                        </div>
+
+                        <!-- Opção de salvar vínculo permanente (RF11 / RN09 / BR09 / CT12) -->
+                        <div style="margin-bottom: 20px; padding: 11px 14px; background: var(--fundo); border-radius: 8px; border: 1px solid var(--borda);">
+                            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--marinho); cursor: pointer;">
+                                <input type="checkbox" id="chkSavePermanent" style="width: 16px; height: 16px; accent-color: var(--destaque);">
+                                <span>Salvar permanentemente o vínculo entre embarcação e cliente (RN09)</span>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button class="btn btn-primary" style="width: 100%;" onclick="confirmRevision()">
+                                Confirmar revisão
+                            </button>
+                            <button class="btn btn-outline" style="width: 100%;" onclick="openManualVesselRegistration()">
+                                Cadastrar embarcação
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 ETAPA 4 DE 6: CADASTRO MANUAL DE EMBARCAÇÃO
+                 ========================================================= -->
+            <section id="step-4" class="step-panel">
+                <div class="grid-2col">
+
+                    <!-- Coluna Esquerda: Nova Embarcação -->
+                    <div class="card">
+                        <div class="card-title">
+                            <span>Nova Embarcação</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nome da embarcação</label>
+                            <input type="text" class="form-control" id="regVesselName" placeholder="Ex: MV Atlantic Star" oninput="validateManualImoInput()">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Número IMO (obrigatório 7 dígitos)</label>
+                            <div style="position: relative;">
+                                <input type="text" class="form-control mono valid-input" id="regVesselImo" maxlength="7" placeholder="Ex: 9387421" oninput="validateManualImoInput()">
+                                <span id="regImoStatusIcon" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--sucesso); font-weight: 800;">✔</span>
+                            </div>
+                            <div id="regImoFeedbackText" style="font-size: 12.5px; font-weight: 600; color: var(--sucesso); margin-top: 6px;">
+                                IMO válido: 7 dígitos numéricos e disponível.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Cliente vinculado</label>
+                            <select class="form-control" id="regVesselCustomer"></select>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--borda); margin-top: 28px; padding-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+                            <button class="btn btn-outline-subtle" onclick="goToStep(3)">
+                                Cancelar
+                            </button>
+                            <button class="btn btn-primary" id="btnSaveVessel" onclick="submitNewVessel()">
+                                💾 Salvar cadastro
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Regras de Integridade & Validação de Erro -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="card">
+                            <div class="card-title">
+                                <span>Regras de Integridade</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: var(--marinho);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--sucesso); font-weight: 800;">✔</span>
+                                    <span>Exige exatamente 7 dígitos numéricos.</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--sucesso); font-weight: 800;">✔</span>
+                                    <span>Bloqueia cadastro de IMO duplicado.</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--sucesso); font-weight: 800;">✔</span>
+                                    <span>Salva apenas com confirmação humana.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="background-color: var(--erro-bg); border: 1.5px solid var(--erro);">
+                            <div style="display: flex; align-items: center; gap: 8px; color: var(--erro); font-weight: 700; font-size: 14.5px; margin-bottom: 12px;">
+                                <span>✖</span>
+                                <span id="regErrorCardTitle">Validação de Erro (Exemplo)</span>
+                            </div>
+                            <input type="text" class="form-control mono" id="regErrorCardSample" value="93874" readonly style="border-color: rgba(190,76,76,0.4); color: var(--erro); background: #FFFFFF; margin-bottom: 10px;">
+                            <p id="regErrorCardDesc" style="font-size: 13px; color: var(--erro); line-height: 1.45;">
+                                Erro: o número IMO deve conter exatamente 7 dígitos e não pode existir no banco.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 ETAPA 5 DE 6: EDITOR DE E-MAIL OPERACIONAL
+                 ========================================================= -->
+            <section id="step-5" class="step-panel">
+                <div class="card">
+                    <div class="email-field-row">
+                        <div class="email-field-label">Destinatário:</div>
+                        <input type="email" class="form-control mono" id="emailDestination" style="background-color: var(--fundo);">
+                    </div>
+
+                    <div class="email-field-row">
+                        <div class="email-field-label">Assunto:</div>
+                        <input type="text" class="form-control" id="emailSubject" style="background-color: var(--fundo); font-weight: 700;">
+                    </div>
+
+                    <div class="editor-toolbar">
+                        <div class="toolbar-icons">
+                            <span title="Negrito">B</span>
+                            <span title="Itálico" style="font-style: italic;">I</span>
+                            <span title="Sublinhado" style="text-decoration: underline;">U</span>
+                            <span title="Lista">≣</span>
+                            <span title="Link">🔗</span>
+                        </div>
+
+                        <div class="template-lang-toggle">
+                            <button type="button" class="lang-btn active" id="btnLangEn" onclick="switchEmailLanguage('en')">
+                                Template padrão • Inglês
+                            </button>
+                            <button type="button" class="lang-btn" id="btnLangPt" onclick="switchEmailLanguage('pt')">
+                                Template padrão • Português (MVP)
+                            </button>
+                        </div>
+                    </div>
+
+                    <textarea class="email-body-textarea" id="emailBody"></textarea>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px; color: var(--sucesso); font-size: 13.5px; font-weight: 600;">
+                            <span>✔</span>
+                            <span>Gerado automaticamente com os dados revisados</span>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="goToStep(6)">
+                            Avançar para aprovação →
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 ETAPA 6 DE 6: APROVAÇÃO FINAL E ENVIO SIMULADO
+                 ========================================================= -->
+            <section id="step-6" class="step-panel">
+
+                <div class="human-control-banner">
+                    <span style="font-size: 20px;">✋</span>
+                    <span>Controle Humano Obrigatório: o sistema SIGECAR não envia e-mails automaticamente. O envio real depende da aprovação do operador.</span>
+                </div>
+
+                <div class="grid-2col-equal">
+                    <!-- Resumo da Operação -->
+                    <div class="card">
+                        <div class="card-title" style="border-bottom: 1px solid var(--borda); padding-bottom: 12px;">
+                            <span>Resumo da Operação</span>
+                        </div>
+                        <div class="summary-list" id="approvalOperationSummary"></div>
+                    </div>
+
+                    <!-- Resumo da Comunicação -->
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="card-title" style="border-bottom: 1px solid var(--borda); padding-bottom: 12px;">
+                                <span>Resumo da Comunicação</span>
+                            </div>
+                            <div class="summary-list" id="approvalCommSummary"></div>
+                        </div>
+
+                        <div id="approvalStatusBanner" class="badge badge-success" style="width: 100%; justify-content: flex-start; padding: 12px 16px; margin-top: 22px;">
+                            Pronto para aprovação e registro
+                        </div>
+                    </div>
+                </div>
+
+                <div class="decision-bar">
+                    <strong style="font-size: 15px; color: var(--marinho);">Decisão do Operador:</strong>
+
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-outline-subtle" onclick="copyFinalMessage()">
+                            📋 Copiar mensagem
+                        </button>
+                        <button class="btn btn-primary" onclick="approveAndSimulateSend('simulate')">
+                            ✈ Simular envio
+                        </button>
+                        <button class="btn btn-success" onclick="approveAndSimulateSend('approve')">
+                            ✔ Aprovar relatório
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 ABA 7: HISTÓRICO DE APROVAÇÕES & BANCO DE DADOS (CT16 / ERD)
+                 ========================================================= -->
+            <section id="step-7" class="step-panel">
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-title">
+                        <span>Histórico de Aprovações e Envios Simulados (Tabela: Email_Report & PDF_Processing — CT16)</span>
+                        <span class="badge badge-neutral" id="historyCountBadge">0 registros</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data/Hora Aprovação</th>
+                                    <th>Operador</th>
+                                    <th>Arquivo PDF</th>
+                                    <th>Embarcação (IMO)</th>
+                                    <th>Cliente / Destinatário</th>
+                                    <th>Assunto</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <div class="card">
+                        <div class="card-title">
+                            <span>Embarcações Cadastradas (Tabela: Vessel)</span>
+                            <button class="btn btn-primary btn-sm" onclick="goToStep(4)">+ Nova Embarcação</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Embarcação</th>
+                                    <th>IMO (UNIQUE)</th>
+                                    <th>Cliente Vinculado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vesselsTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">
+                            <span>Clientes Cadastrados (Tabela: Customer)</span>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Empresa</th>
+                                    <th>Contato</th>
+                                    <th>E-mail de Destino</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-title">
+                        <span>Usuários / Operadores Cadastrados (Tabela: User)</span>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome do Operador</th>
+                                <th>Cargo / Role</th>
+                                <th>Usuário</th>
+                                <th>E-mail Corporativo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

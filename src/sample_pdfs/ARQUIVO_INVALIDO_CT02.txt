@@ -1,0 +1,3 @@
+Embarcação: MV Atlantic Star
+IMO: 9387421
+Este arquivo é TXT e deve ser rejeitado (CT02).
