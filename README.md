@@ -1,5 +1,9 @@
 # PORTFLOW
 
+<p align="center">
+  <img src="assets/logo/porflow_transparente.png" alt="PORTFLOW logo" width="320">
+</p>
+
 **Intelligent Document Processing and Operational Workflow for Maritime Agencies**
 
 PORTFLOW is a functional web prototype developed to streamline the processing of operational PDF documents in maritime agencies. The prototype is branded as **SIGECAR** in its user interface.
@@ -37,6 +41,10 @@ See [Technologies](docs/technologies.md) for details.
 ```text
 PORTFLOW/
 ├── assets/
+│   ├── logo/
+│   │   ├── porflow_transparente.png
+│   │   ├── portflow_azul.jpg
+│   │   └── portflow_verde.jpg
 │   └── screenshots/
 ├── docs/
 │   ├── architecture.md
@@ -135,6 +143,14 @@ The test suite covers authentication and the acceptance scenarios CT01–CT17, a
 - [Operational Workflow](docs/workflow.md)
 - [Technologies](docs/technologies.md)
 - [Team and Contributions](docs/team.md)
+
+## Brand assets
+
+The repository includes the transparent logo and blue and green logo variations in [assets/logo](assets/logo/):
+
+- [Transparent logo](assets/logo/porflow_transparente.png)
+- [Blue logo](assets/logo/portflow_azul.jpg)
+- [Green logo](assets/logo/portflow_verde.jpg)
 
 ## Screenshots
 
