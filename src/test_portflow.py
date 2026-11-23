@@ -1,7 +1,14 @@
 import io
 import json
 import os
+import tempfile
 from pathlib import Path
+
+# Keep automated tests isolated from the developer's real database and sample PDFs.
+_TEST_TEMP_DIR = tempfile.TemporaryDirectory(prefix="portflow-tests-")
+_TEST_DATA_DIR = Path(_TEST_TEMP_DIR.name)
+os.environ["PORTFLOW_DB_PATH"] = str(_TEST_DATA_DIR / "portflow.db")
+os.environ["PORTFLOW_SAMPLE_DIR"] = str(_TEST_DATA_DIR / "sample_pdfs")
 
 import app as portflow_app
 import database

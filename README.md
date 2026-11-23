@@ -48,6 +48,12 @@ PORTFLOW/
 │   └── screenshots/
 ├── docs/
 │   ├── architecture.md
+│   ├── diagrams/
+│   │   └── class-diagram.jpeg
+│   ├── prototype/
+│   │   └── portflow-prototype.pdf
+│   ├── presetation/
+│   │   └── portflow-presentation.pdf
 │   ├── technologies.md
 │   ├── team.md
 │   └── workflow.md
@@ -135,14 +141,17 @@ From the `src/` directory, with the virtual environment activated, run:
 python test_portflow.py
 ```
 
-The test suite covers authentication and the acceptance scenarios CT01–CT17, as well as additional sample PDF cases. Tests reset the local SQLite database; do not run them against a database containing data you need to keep.
+The test suite covers authentication and the acceptance scenarios CT01–CT17, as well as additional sample PDF cases. Test runs use a temporary SQLite database and a temporary sample-PDF directory, leaving the application's local database and bundled sample files untouched.
 
-## Documentation
+## Documentation and project deliverables
 
 - [System Architecture](docs/architecture.md)
+- [Class Diagram](docs/diagrams/class-diagram.jpeg)
 - [Operational Workflow](docs/workflow.md)
 - [Technologies](docs/technologies.md)
 - [Team and Contributions](docs/team.md)
+- [Functional Prototype (PDF)](docs/prototype/portflow-prototype.pdf)
+- [Project Presentation (PDF)](docs/presetation/portflow-presentation.pdf)
 
 ## Brand assets
 
@@ -158,7 +167,7 @@ The application screenshots are available in [assets/screenshots](assets/screens
 
 ## Project presentation
 
-PORTFLOW was developed as part of the Tech Shark Tank challenge at ISULPAR, within the English for Information Systems course. The presentation PDF is not included in the repository at this time.
+PORTFLOW was developed as part of the Tech Shark Tank challenge at ISULPAR, within the English for Information Systems course. The repository includes both the functional prototype document and the project presentation in PDF format.
 
 ## Team
 

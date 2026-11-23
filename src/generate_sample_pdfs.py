@@ -1,13 +1,16 @@
+import os
 import shutil
 import sys
 from pathlib import Path
 
 if getattr(sys, "frozen", False):
-    SAMPLE_DIR = Path(sys.executable).parent / "sample_pdfs"
+    DEFAULT_SAMPLE_DIR = Path(sys.executable).parent / "sample_pdfs"
     BUNDLED_SAMPLE_DIR = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent)) / "sample_pdfs"
 else:
-    SAMPLE_DIR = Path(__file__).parent / "sample_pdfs"
-    BUNDLED_SAMPLE_DIR = SAMPLE_DIR
+    DEFAULT_SAMPLE_DIR = Path(__file__).parent / "sample_pdfs"
+    BUNDLED_SAMPLE_DIR = DEFAULT_SAMPLE_DIR
+
+SAMPLE_DIR = Path(os.environ.get("PORTFLOW_SAMPLE_DIR", str(DEFAULT_SAMPLE_DIR)))
 
 
 def _escape_pdf_text(text: str) -> bytes:

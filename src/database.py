@@ -12,7 +12,7 @@ if getattr(sys, "frozen", False):
 else:
     BASE_APP_DIR = Path(__file__).parent
 
-DB_PATH = BASE_APP_DIR / "portflow.db"
+DB_PATH = Path(os.environ.get("PORTFLOW_DB_PATH", str(BASE_APP_DIR / "portflow.db")))
 CREDENTIALS_PATH = BASE_APP_DIR / ".first_run_credentials.txt"
 
 
