@@ -1,3 +1,5 @@
+import os
+import secrets
 import sys
 import threading
 import webbrowser
@@ -20,7 +22,7 @@ else:
     BUNDLE_DIR = Path(__file__).parent
     app = Flask(__name__)
 
-app.secret_key = "sigecar-maritime-agency-secret-key-2026"
+app.secret_key = os.environ.get("PORTFLOW_SECRET_KEY") or secrets.token_hex(32)
 SAMPLE_DIR = generate_sample_pdfs.SAMPLE_DIR
 
 
