@@ -103,7 +103,21 @@ On first startup, the application creates a local file named `.first_run_credent
 
 To define your own initial demo password before the first run, set the `PORTFLOW_DEFAULT_PASSWORD` environment variable. Existing databases retain their current passwords, which are upgraded to secure password hashes when the application initializes.
 
-For a stable Flask session key, set `PORTFLOW_SECRET_KEY` in your environment before starting the application. If it is not set, a random key is generated for the current run, so active sessions will not survive an application restart.
+For a stable Flask session key, set `PORTFLOW_SECRET_KEY` before starting the application. Example:
+
+**Windows (PowerShell):**
+
+```powershell
+$env:PORTFLOW_SECRET_KEY = "replace-with-a-long-random-secret"
+```
+
+**macOS / Linux:**
+
+```bash
+export PORTFLOW_SECRET_KEY="replace-with-a-long-random-secret"
+```
+
+If this variable is not set, a random key is generated for the current run, so active sessions will not survive an application restart. Never commit real secrets to the repository. The `.env.example` file documents the available variables; the application does not automatically load a `.env` file.
 
 ## Automated tests
 
@@ -128,7 +142,7 @@ The application screenshots are available in [assets/screenshots](assets/screens
 
 ## Project presentation
 
-PORTFLOW was developed as part of the Tech Shark Tank challenge at ISULPAR, within the English for Information Systems course. The presentation PDF is not currently linked because its final repository path has not yet been verified.
+PORTFLOW was developed as part of the Tech Shark Tank challenge at ISULPAR, within the English for Information Systems course. The presentation PDF is not included in the repository at this time.
 
 ## Team
 
